@@ -8,6 +8,30 @@ root=/buildroot
 cd "$root"
 
 
+if [ x"$_VERSION" != x"" ]; then
+ # Check out the given version number, commit, or branch
+ # If the value is "STABLE", then check out the tag for the latest version
+ if ! [ -d "$root/.git" ]; then
+  echo "$ELEMENTS_ARGV0: error: version or git tag/commit/branch given, but" >&2
+  echo "  this image is not based on a git repository" >&2
+  exit 2
+ fi
+ checkout=
+ if [ x"$_VERSION" = x"STABLE" ]; then
+  checkout=$(git tag --list 'v*' --sort=version:refname | tail -n 1)
+  if [ x"$checkout" = x"" ]; then
+   echo "$ELEMENTS_ARGV0: error: could not find latest version tag" >&2
+   exit 1
+  fi
+ elif (printf '%s\n' "$_VERSION" | head -n 1 | grep -q -e '^[0-9]\+\(\.[0-9]\+\)\+$'); then
+  checkout="v$_VERSION"
+ else
+  checkout="$_VERSION"
+ fi
+ git checkout "$checkout"
+fi
+
+
 # Build products will not fit in RAM on most hosts
 mkdir -p /tmp/out/buildroot/build_dir
 ln -sf /tmp/out/buildroot/build_dir "$root/build_dir"

@@ -14,6 +14,15 @@ help:
 	@echo "  target={TARGET}-{SUBTARGET}"
 	@echo "    The OpenWrt target for which to build"
 	@echo "    (default: ${_DEFAULT_TARGET})"
+	@echo "  version={VERSION_NUMBER|TAG|COMMIT|BRANCH}"
+	@echo "    When building OpenWrt from a git repository (default for the \`openwrt\`"
+	@echo "    products), check out the given version number or git tag, commit,"
+	@echo "    or branch."
+	@echo "    (default: empty; build git head or contents of rooter.zip)"
+	@echo "  stable=1"
+	@echo "    Build the latest stable version of OpenWrt.  Overrides the \`version\`"
+	@echo "    option; equivalent to \`version=STABLE\`."
+	@echo "    (default: 0)"
 	@echo "  patch={PATCH_SCRIPT_FILE_OR_DIRECTORY}"
 	@echo "    If a file, a shell script to be executed in /buildroot before building"
 	@echo "    OpenWrt.  If a directory, it will be mounted at /patch and the script"
@@ -48,6 +57,9 @@ _IBSDK_SRC := ${_COMMON_SRC} src/ibsdk.def src/ibsdk.sh
 _debug := $(filter-out 0,${debug})
 _debug_parallel := $(filter-out 0,${debug_parallel})
 _debug_flags := $(if ${_debug}${_debug_parallel},$(if ${_debug_parallel},,-j 1 )-V,)
+
+_stable := $(filter-out 0,${stable})
+_version_flag := $(if ${_stable},-v "STABLE",$(if ${version},-v "${version}",))
 
 
 .PHONY: openwrt openwrt-ibsdk openwrt-ibsdk.src
@@ -91,7 +103,7 @@ endef
 
 define make_ibsdk_src =
 	rm -rf "$@.new"
-	"./$<" $(if ${shell},-s,) ${_debug_flags} -t "$*" $(if ${patch},-p "${patch}",) "$@"
+	"./$<" $(if ${shell},-s,) ${_debug_flags} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@"
 	rm -rf "$@" && mv "$@.new" "$@"
 endef
 
