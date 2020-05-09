@@ -104,6 +104,9 @@ build() {
  printf '%s\n' "$target" > /out/about/target
  cp -pr /patch /out/about/buildroot-patch-script
  cp -p /tmp/out/config.seed /out/about/config.seed
+ if [ -d "$root/.git" ]; then
+  git describe --tags --dirty --always 2>/dev/null > /out/about/git-describe
+ fi
 }
 [ $_SHELL_ONLY -eq 0 ] && (set -e; build) || true; r=$?
 
