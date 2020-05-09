@@ -28,6 +28,9 @@ help:
 	@echo "    OpenWrt.  If a directory, it will be mounted at /patch and the script"
 	@echo "    /patch/Patchfile will be executed in /buildroot before building OpenWrt."
 	@echo "    (default: none)"
+	@echo "  jobs={NUMBER_OF_CORES}"
+	@echo "    Use the given number of cores when building OpenWrt."
+	@echo "    (default: number of cores listed in /proc/cpuinfo plus 1)"
 	@echo ""
 	@echo "Debugging options:"
 	@echo "  debug=1"
@@ -54,9 +57,12 @@ _COMMON_SRC := src/def-common.sh src/chuidgid.c
 _BUILDROOT_SRC := ${_COMMON_SRC} src/buildroot.sh
 _IBSDK_SRC := ${_COMMON_SRC} src/ibsdk.def src/ibsdk.sh
 
+_jobs := $(filter-out 0,${jobs})
+_jobs_flag := $(if ${_jobs},-j ${jobs},)
+
 _debug := $(filter-out 0,${debug})
 _debug_parallel := $(filter-out 0,${debug_parallel})
-_debug_flags := $(if ${_debug}${_debug_parallel},$(if ${_debug_parallel},,-j 1 )-V,)
+_debug_flags := $(if ${_debug}${_debug_parallel},$(if ${_jobs}${_debug_parallel},,-j 1 )-V,)
 
 _stable := $(filter-out 0,${stable})
 _version_flag := $(if ${_stable},-v "STABLE",$(if ${version},-v "${version}",))
@@ -103,7 +109,7 @@ endef
 
 define make_ibsdk_src =
 	rm -rf "$@.new"
-	"./$<" $(if ${shell},-s,) ${_debug_flags} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@"
+	"./$<" $(if ${shell},-s,) ${_debug_flags} ${_jobs_flag} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@"
 	rm -rf "$@" && mv "$@.new" "$@"
 endef
 
