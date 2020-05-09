@@ -4,7 +4,8 @@ all: help
 .PHONY: help
 help:
 	@echo "Usage: $(notdir ${MAKE}) {PRODUCT} [options [...]]"
-	@echo "Products: openwrt, openwrt-ibsdk, rooter, rooter-ibsdk"
+	@echo "Products: openwrt, openwrt-ibsdk, openwrt-buildroot,"
+	@echo "          rooter,  rooter-ibsdk,  rooter-buildroot"
 	@echo "Output filename template (Image Builder and SDK): {PRODUCT}-ibsdk.{TARGET}"
 	@echo "Output filename template (buildroot): {PRODUCT}-buildroot"
 	@echo "Input directory for openwrt-ibsdk: openwrt-ibsdk.{TARGET}.src"
