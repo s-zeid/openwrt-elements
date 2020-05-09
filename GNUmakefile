@@ -48,9 +48,12 @@ _DEFAULT_TARGET := $(shell cat src/default-target)
 
 target := $(_DEFAULT_TARGET)
 patch :=
+jobs := 0
 debug := 0
 debug_parallel := 0
 shell := 0
+stable := 0
+version :=
 
 
 _COMMON_SRC := src/def-common.sh src/chuidgid.c
