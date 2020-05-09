@@ -1,0 +1,55 @@
+#Elements.name: openwrt-ibsdk
+#Elements.ps1-color: 4
+
+#Elements.args: spec:bind>/spec:ro out:output \
+#               -j:env>_MAKE_PARALLEL:int -V:env>_TRACE:bool -x:env>_TRACE:bool \
+#               -s:env>_SHELL_AFTER:bool -S:env>_SHELL_ONLY:bool \
+#               -n:instance
+#Elements.env: OUT_PATH=$out
+
+#Elements.root-copyup: true
+
+
+Bootstrap: docker
+From: debian:buster-slim
+
+
+%runscript
+ exec /.main.sh "$@"
+
+
+%files
+ ./chuidgid.c /usr/local/bin/chuidgid.c
+ ./def-common.sh /.def-common.sh
+ ./ibsdk.sh /.main.sh
+ ../ibsdk.src.lock /ibsdk.src
+
+
+%post
+. /.def-common.sh
+rm /.def-common.sh
+
+
+main() {
+ post_common
+ 
+ # Unpack IB and SDK
+ mkdir /unpack && cd /unpack
+ mkdir imagebuilder && cd imagebuilder
+ tar --strip-components=1 -x -J -f /ibsdk.src/imagebuilder.tar.xz
+ cd ..
+ mkdir sdk && cd sdk
+ tar --strip-components=1 -x -J -f /ibsdk.src/sdk.tar.xz
+ cd ..
+ mv imagebuilder /
+ mv sdk /
+ cd / && rm -rf /unpack
+ [ -e "/ibsdk.src/about" ] && mv /ibsdk.src/about /about || true
+ rm -rf /ibsdk.src
+}
+
+
+main "$@"
+
+
+# vim: set ft=sh fdm=marker:

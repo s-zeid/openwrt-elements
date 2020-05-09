@@ -1,0 +1,11 @@
+*.swp
+
+*-buildroot
+*-ibsdk.*
+*.src
+
+ROOter*.zip
+rooter*.zip
+
+*.patch
+*.spec

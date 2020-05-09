@@ -1,0 +1,91 @@
+#Elements.name: rooter-buildroot
+#Elements.ps1-color: 4
+
+#Elements.args: out:output \
+#               -t:env>_TARGET -p:bind>/patch:ro \
+#               -j:env>_MAKE_PARALLEL:int -V:env>_TRACE:bool \
+#               -s:env>_SHELL_AFTER:bool -S:env>_SHELL_ONLY:bool \
+#               -n:instance
+#Elements.env: OUT_PATH=$out
+
+#Elements.root-copyup: true
+
+
+Bootstrap: docker
+From: debian:buster-slim
+
+
+%runscript
+extra_config() {
+ # Get all ROOter menu options
+ for i in $(get_package_options ROOter tmp/.config-package.in); do
+  echo "CONFIG_$i=y" >> /tmp/out/rooter-config-all
+ done
+ cat /tmp/out/rooter-config-all >> .config
+}
+
+get_toplevel_menu() {
+ awk -v menu_name="$1" '
+  BEGIN { level = 0 }
+  /^menu "([^"]+)"( .*)?$/ {
+   if ($0 == "menu \"" menu_name "\"" || level > 0)
+    level += 1
+  }
+  {
+   if (level > 0)
+    print
+  }
+  /^endmenu( .*)?$/ {
+   if (level > 0)
+    level -= 1
+  }
+ ' "$2"
+}
+
+get_package_options() {
+ get_toplevel_menu "$@" | grep '^\s*config PACKAGE_' | grep -o 'PACKAGE_[^ #]\+'
+}
+
+. /.main.sh "$@"
+
+
+%files
+ ./chuidgid.c /usr/local/bin/chuidgid.c
+ ./default-target /.default-target
+ ./def-common.sh /.def-common.sh
+ ./buildroot.sh /.main.sh
+ ../rooter.zip /rooter.zip
+
+
+%post
+. /.def-common.sh
+rm /.def-common.sh
+
+main() {
+ post_common
+ 
+ # Unpack ROOter buildroot
+ mkdir /unpack && cd /unpack
+ unzip -q /rooter.zip && rm /rooter.zip
+ if [ x"$(ls -a | wc -l)" != x"3" ] || ! [ -d * ]; then
+  echo "element.def: error: rooter.zip does not have a top-level directory" &>2
+  echo "  Either the archive is not the ROOter Build System, or upstream" >&2
+  echo "  changed the format of the archive." &>2
+  exit 1
+ fi
+ mv * /buildroot
+ cd / && rm -rf /unpack
+ 
+ # Upgrade tools/bison to 3.1 if it is 3.0.x
+ # (See <https://forum.openwrt.org/t/tools-bison-lib-fseterr-c-build-problems-on-18-06-0-due-to-glibc-2-28-changes/18926/7>)
+ if grep -q -e '^PKG_VERSION\s*:\?=\s*3\.0' /buildroot/tools/bison/Makefile; then
+  sed -i -e 's/^\(PKG_VERSION\)\s*\(:\?=\).*$/\1\23.1/g; s/^\(PKG_HASH\)\s*\(:\?=\).*$/\1\27c2464ad6cb7b513b2c350a092d919327e1f63d12ff024836acbb504475da5c6/g' /buildroot/tools/bison/Makefile
+  sed -i -e 's/^-#if HAVE_RAW_DECL_GETS$/\0 \&\& !defined __cplusplus/g' /buildroot/tools/bison/patches/100-fix-gets-removal.patch
+  rm -f /buildroot/tools/bison/patches/001-fix-macos-vasnprintf.patch
+ fi
+}
+
+main "$@"
+
+
+# vim: set ft=sh fdm=marker:
