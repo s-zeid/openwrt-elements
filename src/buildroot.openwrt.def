@@ -37,9 +37,9 @@ rm /.def-common.sh
 main() {
  post_common
  
- # TODO Unpack OpenWrt buildroot or IB/SDK
+ # TODO: allow using trees other than the official master branch
  mkdir /unpack && cd /unpack
- ...
+ git clone https://git.openwrt.org/openwrt/openwrt.git
  mv * /buildroot
  cd / && rm -rf /unpack
  
