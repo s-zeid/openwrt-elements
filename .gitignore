@@ -1,4 +1,5 @@
 *.swp
+.elements-out-tmp.*
 
 *-buildroot
 *-ibsdk.*
