@@ -5,8 +5,8 @@ all: help
 help:
 	@echo "Usage: $(notdir ${MAKE}) {PRODUCT} [options [...]]"
 	@echo "Products: openwrt, rooter; {PRODUCT}-ibsdk, {PRODUCT}-buildroot"
-	@echo "Output filename template (Image Builder and SDK): {PRODUCT}-ibsdk.{TARGET}"
-	@echo "Output filename template (buildroot): {PRODUCT}-buildroot"
+	@echo "Output filename template (Image Builder/SDK): {PRODUCT}-ibsdk.{TARGET}.{ARCH}"
+	@echo "Output filename template (buildroot): {PRODUCT}-buildroot.{ARCH}"
 	@echo "Input directory for {PRODUCT}-ibsdk: {PRODUCT}-ibsdk.{TARGET}.src"
 	@echo "  (must contain imagebuilder.tar.xz and sdk.tar.xz)"
 	@echo ""
@@ -60,6 +60,8 @@ _COMMON_SRC := src/def-common.sh src/chuidgid.c
 _BUILDROOT_SRC := ${_COMMON_SRC} src/buildroot.sh
 _IBSDK_SRC := ${_COMMON_SRC} src/ibsdk.def src/ibsdk.sh
 
+_arch := $(shell uname -m)
+
 _jobs := $(filter-out 0,${jobs})
 _jobs_flag := $(if ${_jobs},-j ${jobs},)
 
@@ -71,43 +73,45 @@ _stable := $(filter-out 0,${stable})
 _version_flag := $(if ${_stable},-v "STABLE",$(if ${version},-v "${version}",))
 
 
-.PHONY: openwrt openwrt-ibsdk openwrt-ibsdk.src
+.PHONY: openwrt openwrt-buildroot openwrt-ibsdk openwrt-ibsdk.src
 openwrt: openwrt-ibsdk.src openwrt-ibsdk
-openwrt-ibsdk: openwrt-ibsdk.${target}
-openwrt-ibsdk.src: openwrt-ibsdk.${target}.src
 
-openwrt-ibsdk.%: _product := openwrt
-openwrt-ibsdk.%: ${_IBSDK_SRC}
+openwrt-ibsdk: openwrt-ibsdk.${target}.${_arch}
+openwrt-ibsdk.%.${_arch}: _product := openwrt
+openwrt-ibsdk.%.${_arch}: ${_IBSDK_SRC}
 	$(make_ibsdk)
 
-openwrt-ibsdk.%.src: openwrt-buildroot
+openwrt-ibsdk.src: openwrt-ibsdk.${target}.src
+openwrt-ibsdk.%.src: openwrt-buildroot.${_arch}
 	$(make_ibsdk_src)
 
-openwrt-buildroot: _product := openwrt
-openwrt-buildroot: ${_BUILDROOT_SRC} src/buildroot.openwrt.def
+openwrt-buildroot: openwrt-buildroot.${_arch}
+openwrt-buildroot.${_arch}: _product := openwrt
+openwrt-buildroot.${_arch}: ${_BUILDROOT_SRC} src/buildroot.openwrt.def
 	$(make_buildroot)
 
 
-.PHONY: rooter rooter-ibsdk rooter-ibsdk.src
+.PHONY: rooter rooter-buildroot rooter-ibsdk rooter-ibsdk.src
 rooter: rooter-ibsdk.src rooter-ibsdk
-rooter-ibsdk: rooter-ibsdk.${target}
-rooter-ibsdk.src: rooter-ibsdk.${target}.src
 
-rooter-ibsdk.%: _product := rooter
-rooter-ibsdk.%: ${_IBSDK_SRC}
+rooter-ibsdk: rooter-ibsdk.${target}.${_arch}
+rooter-ibsdk.%.${_arch}: _product := rooter
+rooter-ibsdk.%.${_arch}: ${_IBSDK_SRC}
 	$(make_ibsdk)
 
-rooter-ibsdk.%.src: rooter-buildroot
+rooter-ibsdk.src: rooter-ibsdk.${target}.src
+rooter-ibsdk.%.src: rooter-buildroot.${_arch}
 	$(make_ibsdk_src)
 
-rooter-buildroot: _product := rooter
-rooter-buildroot: ${_BUILDROOT_SRC} src/buildroot.rooter.def
+rooter-buildroot: rooter-buildroot.${_arch}
+rooter-buildroot.${_arch}: _product := rooter
+rooter-buildroot.${_arch}: ${_BUILDROOT_SRC} src/buildroot.rooter.def
 	$(check_rooter_upstream)
 	$(make_buildroot)
 
 
 define make_buildroot =
-	elements "src/buildroot.${_product}.def" "${_product}-buildroot"
+	elements "src/buildroot.${_product}.def" "${_product}-buildroot.${_arch}"
 endef
 
 define make_ibsdk_src =
@@ -120,7 +124,7 @@ define make_ibsdk =
 	flock -nox ibsdk.src.lock rm -f ibsdk.src.lock
 	ln -s "${_product}-ibsdk.$*.src" ibsdk.src.lock
 	flock -nox ibsdk.src.lock \
-	 elements "src/ibsdk.def" "${_product}-ibsdk.$*"
+	 elements "src/ibsdk.def" "${_product}-ibsdk.$*.${_arch}"
 	rm -f ibsdk.src.lock
 endef
 
