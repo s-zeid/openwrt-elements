@@ -88,7 +88,7 @@ build() {
   make_V='V=s'
  fi
  local n_cpus="$(grep '^processor' /proc/cpuinfo | wc -l)"
- /usr/local/bin/unroot make -j "${_MAKE_PARALLEL:-$((n_cpus + 1))}" $make_V
+ /usr/local/bin/unroot time make -j "${_MAKE_PARALLEL:-$((n_cpus + 1))}" $make_V
  
  # Move output
  mv "$root"/bin/* /out/
