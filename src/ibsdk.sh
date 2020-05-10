@@ -12,8 +12,12 @@ cd "$root"
 mkdir -p /tmp/out/imagebuilder /tmp/out/sdk
 mv /imagebuilder/build_dir /tmp/out/imagebuilder/build_dir
 ln -sf /tmp/out/imagebuilder/build_dir /imagebuilder/build_dir
+mv /imagebuilder/staging_dir /tmp/out/imagebuilder/staging_dir
+ln -sf /tmp/out/imagebuilder/staging_dir /imagebuilder/staging_dir
 mv /sdk/build_dir /tmp/out/sdk/build_dir
 ln -sf /tmp/out/sdk/build_dir /sdk/build_dir
+mv /sdk/staging_dir /tmp/out/sdk/staging_dir
+ln -sf /tmp/out/sdk/staging_dir /sdk/staging_dir
 
 
 build() {
