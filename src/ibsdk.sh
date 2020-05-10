@@ -32,7 +32,7 @@ build() {
  if [ -d "/imagebuilder/bin" ]; then
   mv /imagebuilder/bin/* /out/imagebuilder
   rm -rf /imagebuilder/bin
-  ln -s /out/sdk /imagebuilder/bin  # for -s / $_SHELL_AFTER
+  ln -s /out/imagebuilder /imagebuilder/bin  # for -s / $_SHELL_AFTER
  fi
  
  # Move SDK output
