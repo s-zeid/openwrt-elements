@@ -112,7 +112,7 @@ endef
 
 define make_ibsdk_src =
 	rm -rf "$@.new"
-	"./$<" $(if ${shell},-s,) ${_debug_flags} ${_jobs_flag} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@"
+	"./$<" $(if ${shell},-s,) ${_debug_flags} ${_jobs_flag} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@.new"
 	rm -rf "$@" && mv "$@.new" "$@"
 endef
 
