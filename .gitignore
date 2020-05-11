@@ -3,7 +3,7 @@
 
 _
 
-*-buildroot
+*-buildroot.*
 *-ibsdk.*
 *.src
 
