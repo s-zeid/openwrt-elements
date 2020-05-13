@@ -34,15 +34,13 @@ build() {
  
  # Move imagebuilder output
  if [ -d "/imagebuilder/bin" ]; then
-  mv /imagebuilder/bin/* /out/imagebuilder
-  rm -rf /imagebuilder/bin
+  mv /imagebuilder/bin /out/imagebuilder
   ln -s /out/imagebuilder /imagebuilder/bin  # for -s / $_SHELL_AFTER
  fi
  
  # Move SDK output
  if [ -d "/sdk/bin" ]; then
-  mv /sdk/bin/* /out/sdk
-  rm -rf /sdk/bin
+  mv /sdk/bin /out/sdk
   ln -s /out/sdk /sdk/bin  # for -s / $_SHELL_AFTER
  fi
 }
