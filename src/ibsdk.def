@@ -46,6 +46,12 @@ main() {
  cd / && rm -rf /unpack
  [ -e "/ibsdk.src/about" ] && mv /ibsdk.src/about /about || true
  rm -rf /ibsdk.src
+ 
+ # Configure imagebuilder
+ cd /imagebuilder
+ sed -i -e '/^#* *CONFIG_TARGET_ROOTFS_SQUASHFS[= ]/d' .config
+ echo CONFIG_TARGET_ROOTFS_SQUASHFS=y >> .config
+ cd ..
 }
 
 
