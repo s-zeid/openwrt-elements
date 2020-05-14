@@ -47,6 +47,17 @@ main() {
  [ -e "/ibsdk.src/about" ] && mv /ibsdk.src/about /about || true
  rm -rf /ibsdk.src
  
+ # Work around apparent SDK bug where liblto_plugin.so.0.0.0 is (sometimes)
+ # replaced by a wrapper script when building the SDK
+ cd /sdk
+ local gcc_libexec="$(ls -d staging_dir/toolchain-*_gcc-*_musl/libexec/gcc/*/* | head -n1)"
+ local liblto_plugin_so="liblto_plugin.so.0.0.0"
+ ls -l "$gcc_libexec/.$liblto_plugin_so.bin" || true
+ if [ -f "$gcc_libexec/.$liblto_plugin_so.bin" ]; then
+  mv "$gcc_libexec/.$liblto_plugin_so.bin" "$gcc_libexec/$liblto_plugin_so"
+ fi
+ cd ..
+ 
  # Configure imagebuilder
  cd /imagebuilder
  sed -i -e '/^#* *CONFIG_TARGET_ROOTFS_SQUASHFS[= ]/d' .config
