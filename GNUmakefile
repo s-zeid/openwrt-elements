@@ -79,6 +79,7 @@ openwrt: openwrt-ibsdk.src openwrt-ibsdk
 openwrt-ibsdk: openwrt-ibsdk.${target}.${_arch}
 openwrt-ibsdk.%.${_arch}: _product := openwrt
 openwrt-ibsdk.%.${_arch}: ${_IBSDK_SRC}
+	[ -e "openwrt-ibsdk.${target}.src" ] || make openwrt-ibsdk.src
 	$(make_ibsdk)
 
 openwrt-ibsdk.src: openwrt-ibsdk.${target}.src
@@ -97,6 +98,7 @@ rooter: rooter-ibsdk.src rooter-ibsdk
 rooter-ibsdk: rooter-ibsdk.${target}.${_arch}
 rooter-ibsdk.%.${_arch}: _product := rooter
 rooter-ibsdk.%.${_arch}: ${_IBSDK_SRC}
+	[ -e "rooter-ibsdk.${target}.src" ] || make rooter-ibsdk.src
 	$(make_ibsdk)
 
 rooter-ibsdk.src: rooter-ibsdk.${target}.src
