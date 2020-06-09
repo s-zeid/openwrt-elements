@@ -3,51 +3,48 @@ all: help
 
 .PHONY: help
 help:
-	@echo "Usage: $(notdir ${MAKE}) {PRODUCT} [options [...]]"
-	@echo "Products: openwrt, rooter; {PRODUCT}-ibsdk, {PRODUCT}-buildroot"
-	@echo "Output filename template (Image Builder/SDK): {PRODUCT}-ibsdk.{TARGET}.{ARCH}"
-	@echo "Output filename template (buildroot): {PRODUCT}-buildroot.{ARCH}"
-	@echo "Input directory for {PRODUCT}-ibsdk: {PRODUCT}-ibsdk.{TARGET}.src"
-	@echo "  (must contain imagebuilder.tar.xz and sdk.tar.xz)"
-	@echo ""
-	@echo "General options:"
-	@echo "  target={TARGET}-{SUBTARGET}"
-	@echo "    The OpenWrt target for which to build"
-	@echo "    (default: ${_DEFAULT_TARGET})"
-	@echo "  version={VERSION_NUMBER|TAG|COMMIT|BRANCH}"
-	@echo "    When building OpenWrt from a git repository (default for the \`openwrt\`"
-	@echo "    products), check out the given version number or git tag, commit,"
-	@echo "    or branch."
-	@echo "    (default: empty; build git head or contents of rooter.zip)"
-	@echo "  stable=1"
-	@echo "    Build the latest stable version of OpenWrt.  Overrides the \`version\`"
-	@echo "    option; equivalent to \`version=STABLE\`."
-	@echo "    (default: 0)"
-	@echo "  patch={PATCH_SCRIPT_FILE_OR_DIRECTORY}"
-	@echo "    If a file, a shell script to be executed in /buildroot before building"
-	@echo "    OpenWrt.  If a directory, it will be mounted at /patch and the script"
-	@echo "    /patch/Patchfile will be executed in /buildroot before building OpenWrt."
-	@echo "    (default: none)"
-	@echo "  jobs={NUMBER_OF_CORES}"
-	@echo "    Use the given number of cores when building OpenWrt."
-	@echo "    (default: \`nproc\` + 1)"
-	@echo ""
-	@echo "Debugging options:"
-	@echo "  warnings=0"
-	@echo "    Do not pass \`V=w\` to make when building OpenWrt.  Overrides"
-	@echo "    \`debug{,_parallel}=1\` with respect to verbosity."
-	@echo "    (default: 1 if debug options absent; 0 otherwise)"
-	@echo "  debug=1"
-	@echo "    Pass \`-j 1 V=s\` to make when building OpenWrt and trace"
-	@echo "    the build script."
-	@echo "    (default: 0)"
-	@echo "  debug_parallel=1 (not recommended)"
-	@echo "    Pass \`V=s\` to make when building OpenWrt and trace"
-	@echo "    the build script."
-	@echo "    (default: 0)"
-	@echo "  shell=1"
-	@echo "    Start a shell before the buildroot container exits."
-	@echo "    (default: 0)"
+	@printf '%s\n' \
+	"Usage: $(notdir ${MAKE}) {PRODUCT} [options [...]]" \
+	"Products: openwrt, rooter; {PRODUCT}-ibsdk, {PRODUCT}-buildroot" \
+	"Output filename template (Image Builder/SDK): {PRODUCT}-ibsdk.{TARGET}.{ARCH}" \
+	"Output filename template (buildroot): {PRODUCT}-buildroot.{ARCH}" \
+	"Input directory for {PRODUCT}-ibsdk: {PRODUCT}-ibsdk.{TARGET}.src" \
+	"  (must contain imagebuilder.tar.xz and sdk.tar.xz)" \
+	"" \
+	"General options:" \
+	"  target={TARGET}-{SUBTARGET} (default: ${_DEFAULT_TARGET})" \
+	"    The OpenWrt target for which to build" \
+	"  version={VERSION_NUMBER|TAG|COMMIT|BRANCH} (default: empty)" \
+	"    When building OpenWrt from a git repository (default for the \`openwrt\`" \
+	"    products), check out the given version number or git tag, commit, or" \
+	"    branch.  If empty, git HEAD or the contents of rooter.zip will be built." \
+	"  stable=1 (default: 0)" \
+	"    Build the latest stable version of OpenWrt.  Overrides the \`version\`" \
+	"    option; equivalent to \`version=STABLE\`." \
+	"  patch={PATCH_SCRIPT_FILE_OR_DIRECTORY} (default: none)" \
+	"    If a file, a shell script to be executed in /buildroot before building" \
+	"    OpenWrt.  If a directory, it will be mounted at /patch and the script" \
+	"    /patch/Patchfile will be executed in /buildroot before building OpenWrt." \
+	"  jobs={NUMBER_OF_CORES} (default: \`nproc\` + 1)" \
+	"    Use the given number of cores when building OpenWrt." \
+	"" \
+	"Debugging options:" \
+	"  warnings=0 (default: 1 if debug options absent; 0 otherwise)" \
+	"    Do not pass \`V=w\` to make when building OpenWrt.  Overrides" \
+	"    \`debug{,_parallel}=1\` with respect to verbosity." \
+	"  debug=1 (default: 0)" \
+	"    Pass \`-j 1 V=s\` to make when building OpenWrt and trace the build script." \
+	"  debug_parallel=1 (default: 0)" \
+	"    Pass \`V=s\` to make when building OpenWrt and trace the build script" \
+	"    (not recommended)." \
+	"  shell=1 (default: 0)" \
+	"    Start a shell before the buildroot container exits." \
+	; true
+
+hep:
+	@printf '%s\n' \
+	"\"Hep!  Hep!  I'm covered in sawlder! ... Eh?  Nobody comes.\"" \
+	"--Red Green, https://www.youtube.com/watch?v=qVeQWtVzkAQ#t=6m27s"
 
 
 _DEFAULT_TARGET := $(shell cat src/default-target)
