@@ -82,6 +82,9 @@ build() {
   make defconfig
  fi
  
+ # Download sources
+ /usr/local/bin/unroot make download
+ 
  # Build
  local make_V=
  if [ $_TRACE -ne 0 ]; then
