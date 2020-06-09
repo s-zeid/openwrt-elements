@@ -30,7 +30,7 @@ help:
 	@echo "    (default: none)"
 	@echo "  jobs={NUMBER_OF_CORES}"
 	@echo "    Use the given number of cores when building OpenWrt."
-	@echo "    (default: number of cores listed in /proc/cpuinfo plus 1)"
+	@echo "    (default: \`nproc\` + 1)"
 	@echo ""
 	@echo "Debugging options:"
 	@echo "  warnings=0"
