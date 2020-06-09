@@ -33,6 +33,8 @@ fi
 
 
 # Build products will not fit in RAM on most hosts
+mkdir -p /tmp/out/buildroot/dl
+ln -sf /tmp/out/buildroot/dl "$root/dl"
 mkdir -p /tmp/out/buildroot/build_dir
 ln -sf /tmp/out/buildroot/build_dir "$root/build_dir"
 mkdir -p /tmp/out/buildroot/staging_dir
