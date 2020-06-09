@@ -3,7 +3,8 @@
 
 #Elements.args: out:output \
 #               -t:env>_TARGET -v:env>_VERSION -p:bind>/patch:ro \
-#               -j:env>_MAKE_PARALLEL:int -V:env>_TRACE:bool \
+#               -j:env>_MAKE_PARALLEL:int \
+#               -V:env>_TRACE:bool -W:env>_WARNINGS:bool \
 #               -s:env>_SHELL_AFTER:bool -S:env>_SHELL_ONLY:bool \
 #               -n:instance
 #Elements.env: OUT_PATH=$out

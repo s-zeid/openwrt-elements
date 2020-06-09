@@ -33,11 +33,17 @@ help:
 	@echo "    (default: number of cores listed in /proc/cpuinfo plus 1)"
 	@echo ""
 	@echo "Debugging options:"
+	@echo "  warnings=0"
+	@echo "    Do not pass \`V=w\` to make when building OpenWrt.  Overrides"
+	@echo "    \`debug{,_parallel}=1\` with respect to verbosity."
+	@echo "    (default: 1 if debug options absent; 0 otherwise)"
 	@echo "  debug=1"
-	@echo "    Pass \`-j 1 V=s\` to make when building OpenWrt."
+	@echo "    Pass \`-j 1 V=s\` to make when building OpenWrt and trace"
+	@echo "    the build script."
 	@echo "    (default: 0)"
 	@echo "  debug_parallel=1 (not recommended)"
-	@echo "    Pass \`V=s\` to make when building OpenWrt."
+	@echo "    Pass \`V=s\` to make when building OpenWrt and trace"
+	@echo "    the build script."
 	@echo "    (default: 0)"
 	@echo "  shell=1"
 	@echo "    Start a shell before the buildroot container exits."
@@ -54,6 +60,7 @@ debug_parallel := 0
 shell := 0
 stable := 0
 version :=
+warnings :=
 
 
 _COMMON_SRC := src/def-common.sh src/chuidgid.c
@@ -71,6 +78,9 @@ _debug_flags := $(if ${_debug}${_debug_parallel},$(if ${_jobs}${_debug_parallel}
 
 _stable := $(filter-out 0,${stable})
 _version_flag := $(if ${_stable},-v "STABLE",$(if ${version},-v "${version}",))
+
+_warnings := $(filter-out 0,$(if ${warnings},${warnings},$(if ${_debug_flags},0,1)))
+_warnings_flag := $(if ${_warnings},-W,)
 
 
 .PHONY: openwrt openwrt-buildroot openwrt-ibsdk openwrt-ibsdk.src
@@ -118,7 +128,7 @@ endef
 
 define make_ibsdk_src =
 	rm -rf "$@.new"
-	"./$<" $(if ${shell},-s,) ${_debug_flags} ${_jobs_flag} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@.new"
+	"./$<" $(if ${shell},-s,) ${_debug_flags} ${_warnings_flag} ${_jobs_flag} -t "$*" ${_version_flag} $(if ${patch},-p "${patch}",) "$@.new"
 	rm -rf "$@" && mv "$@.new" "$@"
 endef
 
