@@ -111,7 +111,7 @@ build() {
  # About
  mkdir /out/about
  printf '%s\n' "$target" > /out/about/target
- cp -pr /patch /out/about/buildroot-patch-script
+ cp -pr /patch /out/about/buildroot-patch-script || true
  cp -p /tmp/out/config.in /out/about/config.in
  cp -p /out/targets/*/*/*.buildinfo /out/about/ 2>/dev/null || true  # >= v19.07.0
  cp -p /out/targets/*/*/*.seed /out/about/ 2>/dev/null || true  # < v19.07.0
