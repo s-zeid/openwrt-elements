@@ -58,6 +58,22 @@ main() {
  fi
  cd ..
  
+ # Work around a bug on armv7l where executing a binary by passing it as an
+ # argument to the dynamic linker leads to the linker failing somehow
+ if [ x"$(uname -m)" = x"armv7l" ]; then
+  mv /imagebuilder/staging_dir/host/bin /imagebuilder/staging_dir/host/bin.orig
+  ln -s /sdk/staging_dir/host/bin /imagebuilder/staging_dir/host/bin
+  #for part in imagebuilder; do
+  # for wrapper in /"$part"/staging_dir/host/bin/*; do
+  #  if [ -f "$wrapper" ] && ! [ -h "$wrapper" ]; then
+  #   if head -n 1 "$wrapper" | grep '^#!'; then
+  #    sed -i -e 's,^exec "\$dir/\.\./lib/ld-linux-armhf\.so[^"]*" --library-path ,#\0\nexec /usr/bin/env LD_LIBRARY_PATH=,' "$wrapper"
+  #   fi
+  #  fi
+  # done
+  #done
+ fi
+ 
  # Configure imagebuilder
  cd /imagebuilder
  sed -i -e '/^#* *CONFIG_TARGET_ROOTFS_SQUASHFS[= ]/d' .config
