@@ -12,3 +12,5 @@ rooter*.zip
 
 *.patch
 *.spec
+
+*.out
